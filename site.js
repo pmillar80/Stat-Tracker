@@ -180,8 +180,8 @@ function createCharacterCard(character) {
     const card = document.createElement('div');
     
     // Calculate health and spirit percentages
-    const healthPercent = character.Health / character.MaxHealth;//calculatePercentage(character.Health);
-    const spiritPercent = character.Spirit / character.MaxSpirit;//calculatePercentage(character.Spirit);
+    const healthPercent = character.Health / character.MaxHealth * 100;//calculatePercentage(character.Health);
+    const spiritPercent = character.Spirit / character.MaxSpirit * 100;//calculatePercentage(character.Spirit);
     
     // Determine card status
     let cardClass = 'character-card';
@@ -212,7 +212,8 @@ function createCharacterCard(character) {
         { label: 'Total Experience', value: character['Total Experience'] },
         { label: 'Wealth', value: character.Wealth },
         { label: 'Stance', value: character.Stance },
-        { label: 'Encumbrance', value: character.Encumbrance }
+        { label: 'Encumbrance', value: character.Encumbrance },
+        { label: 'Last Updated', value: new Date().toLocaleString() }
     ];
 
     let html = `
