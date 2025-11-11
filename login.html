@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Stats Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        /* Login Section */
+        .login-section {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .login-section h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .logout-btn {
+            width: auto;
+            padding: 10px 25px;
+            font-size: 14px;
+            float: right;
+            margin-bottom: 20px;
+        }
+        
+        /* Setup Section */
+        .setup-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        
+        .setup-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .firebase-config {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .firebase-config label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .firebase-config input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .firebase-config input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .instructions {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .instructions code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        
+        .instructions pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .character-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+        }
+        
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .character-card.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            animation: pulse-danger 2s ease-in-out infinite;
+        }
+        
+        .character-card.danger .character-name,
+        .character-card.danger .stat-label,
+        .character-card.danger .stat-value {
+            color: white;
+        }
+        
+        .character-card.danger .character-name {
+            border-bottom-color: white;
+        }
+        
+        .character-card.danger .stat-row {
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .character-card.warning {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+        }
+        
+        .character-card.warning .character-name {
+            color: #7d4e00;
+            border-bottom-color: #7d4e00;
+        }
+        
+        .character-card.warning .stat-label,
+        .character-card.warning .stat-value {
+            color: #5a3600;
+        }
+        
+        .character-card.warning .stat-row {
+            border-bottom-color: rgba(125, 78, 0, 0.2);
+        }
+        
+        @keyframes pulse-danger {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
+            }
+            50% {
+                box-shadow: 0 10px 40px rgba(255, 107, 107, 0.8);
+            }
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        
+        .status-indicator.danger {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+            animation: blink 1s ease-in-out infinite;
+        }
+        
+        .status-indicator.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .character-name {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9em;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+            color: #666;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        .stat-value {
+            color: #333;
+            font-weight: 500;
+            text-align: right;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            color: #721c24;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ Character Stats Tracker ⚔️</h1>
+        
+        <!-- Login Section -->
+        <div id="loginSection" class="login-section">
+            <h2>🔒 Login Required</h2>
+            <div class="form-group">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" placeholder="your@email.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+            </div>
+            <button class="btn" onclick="login()">Login</button>
+            <div id="loginError" class="error-message hidden"></div>
+        </div>
+        
+        <!-- Setup Section -->
+        <div id="setupSection" class="setup-section hidden">
+            <button class="btn logout-btn" onclick="logout()">Logout</button>
+            <h2>Firebase Setup</h2>
+            <div class="firebase-config">
+                <label for="apiKey">API Key:</label>
+                <input type="text" id="apiKey" placeholder="AIzaSy...">
+                
+                <label for="projectId">Project ID:</label>
+                <input type="text" id="projectId" placeholder="your-project-id">
+                
+                <label for="databaseURL">Database URL:</label>
+                <input type="text" id="databaseURL" placeholder="https://your-project.firebaseio.com">
+                
+                <button class="btn" onclick="initializeFirebase()">Connect to Firebase</button>
+            </div>
+            
+            <div class="instructions">
+                <h3>📋 Setup Instructions:</h3>
+                <ol>
+                    <li>Go to <a href="https://console.firebase.google.com/" target="_blank">Firebase Console</a></li>
+                    <li>Create a new project (or use existing)</li>
+                    <li>Go to Project Settings → General → Your apps → Web app</li>
+                    <li>Copy the config values and paste them above</li>
+                    <li>Go to <strong>Authentication</strong> → Get Started → Email/Password → Enable</li>
+                    <li>Add your email and password in Authentication → Users → Add user</li>
+                    <li>Go to Realtime Database → Create Database (start in test mode)</li>
+                    <li>Update Database Rules (see below)</li>
+                    <li>Click "Connect to Firebase" above</li>
+                </ol>
+                
+                <h3>🔒 Secure Database Rules:</h3>
+                <p>Go to Realtime Database → Rules and paste this:</p>
+                <pre>{
+  "rules": {
+    "characters": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    }
+  }
+}</pre>
+                <p>This ensures only authenticated users can access your data!</p>
+                
+                <h3>📤 API Endpoint:</h3>
+                <p>Once connected, send POST requests to:</p>
+                <pre id="apiEndpoint">Configure Firebase first to see your endpoint</pre>
+                
+                <h3>📝 Request Format (JSON):</h3>
+                <pre>{
+  "characters": [
+    {
+      "Name": "Warrior",
+      "Status": "Active",
+      "Total Experience": "15000",
+      "Location": "Dark Forest",
+      "Wealth": "5000 gold",
+      "Health": "850/1000",
+      "Mana": "200/200",
+      "Stamina": "500/600",
+      "Spirit": "300/300",
+      "Current Experience": "2500/5000",
+      "Stance": "Defensive",
+      "Encumbrance": "Light"
+    }
+  ]
+}</pre>
+            </div>
+        </div>
+        
+        <div id="statusMessage"></div>
+        
+        <!-- Characters Display -->
+        <div id="charactersDisplay" class="hidden">
+            <button class="btn logout-btn" onclick="logout()">Logout</button>
+            <div style="clear: both;"></div>
+            <div class="characters-grid" id="charactersGrid"></div>
+            <div class="last-updated" id="lastUpdated"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        let db;
+        let auth;
+        let firebaseConfig;
+
+        // Check authentication state on load
+        window.addEventListener('load', () => {
+            const savedConfig = localStorage.getItem('firebaseConfig');
+            if (savedConfig) {
+                firebaseConfig = JSON.parse(savedConfig);
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getDatabase(app);
+                    
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            // User is logged in
+                            document.getElementById('loginSection').classList.add('hidden');
+                            document.getElementById('setupSection').classList.add('hidden');
+                            document.getElementById('charactersDisplay').classList.remove('hidden');
+                            listenForCharacterUpdates();
+                        } else {
+                            // User is logged out
+                            document.getElementById('loginSection').classList.remove('hidden');
+                            document.getElementById('setupSection').classList.add('hidden');
+                            document.getElementById('charactersDisplay').classList.add('hidden');
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error initializing Firebase:', error);
+                }
+            }
+        });
+
+        window.login = async function() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Please enter both email and password';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Check if Firebase is initialized
+            if (!auth) {
+                errorDiv.textContent = 'Please configure Firebase first';
+                errorDiv.classList.remove('hidden');
+                // Show setup section
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('setupSection').classList.remove('hidden');
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                errorDiv.classList.add('hidden');
+                showStatus('✅ Login successful!', 'success');
+            } catch (error) {
+                let errorMessage = 'Login failed: ';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage += 'No user found with this email';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage += 'Incorrect password';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage += 'Invalid email address';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage += 'Too many failed attempts. Try again later';
+                        break;
+                    default:
+                        errorMessage += error.message;
+                }
+                errorDiv.textContent = errorMessage;
+                errorDiv.classList.remove('hidden');
+            }
+        };
+
+        window.logout = async function() {
+            try {
+                await signOut(auth);
+                showStatus('Logged out successfully', 'info');
+            } catch (error) {
+                showStatus('Error logging out: ' + error.message, 'error');
+            }
+        };
+
+        window.initializeFirebase = function() {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const projectId = document.getElementById('projectId').value.trim();
+            const databaseURL = document.getElementById('databaseURL').value.trim();
+
+            if (!apiKey || !projectId || !databaseURL) {
+                showStatus('Please fill in all Firebase configuration fields', 'error');
+                return;
+            }
+
+            firebaseConfig = {
+                apiKey: apiKey,
+                authDomain: `${projectId}.firebaseapp.com`,
+                projectId: projectId,
+                databaseURL: databaseURL
+            };
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getDatabase(app);
+                
+                // Save config to localStorage
+                localStorage.setItem('firebaseConfig', JSON.stringify(firebaseConfig));
+                
+                showStatus('✅ Connected to Firebase successfully! Now login with your email and password.', 'success');
+                
+                // Show API endpoint
+                const endpoint = `${databaseURL}/characters.json`;
+                document.getElementById('apiEndpoint').textContent = `POST ${endpoint}`;
+                
+                // Show login section
+                document.getElementById('setupSection').classList.add('hidden');
+                document.getElementById('loginSection').classList.remove('hidden');
+                
+            } catch (error) {
+                showStatus('❌ Error connecting to Firebase: ' + error.message, 'error');
+            }
+        };
+
+        function listenForCharacterUpdates() {
+            const charactersRef = ref(db, 'characters');
+            onValue(charactersRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    displayCharacters(data);
+                } else {
+                    showStatus('Waiting for character data... Send a POST request to update.', 'info');
+                }
+            }, (error) => {
+                if (error.code === 'PERMISSION_DENIED') {
+                    showStatus('❌ Permission denied. Make sure you set the database rules correctly!', 'error');
+                } else {
+                    showStatus('❌ Error reading data: ' + error.message, 'error');
+                }
+            });
+        }
+
+        function displayCharacters(characters) {
+            const grid = document.getElementById('charactersGrid');
+            grid.innerHTML = '';
+
+            if (Array.isArray(characters)) {
+                characters.forEach(character => {
+                    const card = createCharacterCard(character);
+                    grid.appendChild(card);
+                });
+            } else if (typeof characters === 'object') {
+                Object.values(characters).forEach(character => {
+                    const card = createCharacterCard(character);
+                    grid.appendChild(card);
+                });
+            }
+
+            document.getElementById('lastUpdated').textContent = 
+                `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        function createCharacterCard(character) {
+            const card = document.createElement('div');
+            
+            // Calculate health and spirit percentages
+            const healthPercent = calculatePercentage(character.Health);
+            const spiritPercent = calculatePercentage(character.Spirit);
+            
+            // Determine card status
+            let cardClass = 'character-card';
+            let statusClass = '';
+            
+            if (healthPercent !== null && healthPercent <= 25 || 
+                spiritPercent !== null && spiritPercent <= 25) {
+                cardClass += ' danger';
+                statusClass = 'danger';
+            } else if (healthPercent !== null && healthPercent <= 50 || 
+                       spiritPercent !== null && spiritPercent <= 50) {
+                cardClass += ' warning';
+                statusClass = 'warning';
+            }
+            
+            card.className = cardClass;
+
+            const stats = [
+                { label: 'Status', value: character.Status },
+                { label: 'Location', value: character.Location },
+                { label: 'Health', value: character.Health, highlight: healthPercent <= 50 },
+                { label: 'Mana', value: character.Mana },
+                { label: 'Stamina', value: character.Stamina },
+                { label: 'Spirit', value: character.Spirit, highlight: spiritPercent <= 50 },
+                { label: 'Current Experience', value: character['Current Experience'] },
+                { label: 'Total Experience', value: character['Total Experience'] },
+                { label: 'Wealth', value: character.Wealth },
+                { label: 'Stance', value: character.Stance },
+                { label: 'Encumbrance', value: character.Encumbrance }
+            ];
+
+            let html = `
+                <div class="status-indicator ${statusClass}"></div>
+                <div class="character-name">${character.Name || 'Unknown'}</div>
+            `;
+            
+            stats.forEach(stat => {
+                const highlightClass = stat.highlight ? ' style="font-weight: 700;"' : '';
+                html += `
+                    <div class="stat-row">
+                        <span class="stat-label">${stat.label}:</span>
+                        <span class="stat-value"${highlightClass}>${stat.value || 'N/A'}</span>
+                    </div>
+                `;
+            });
+
+            card.innerHTML = html;
+            return card;
+        }
+        
+        function calculatePercentage(value) {
+            if (!value || typeof value !== 'string') return null;
+            
+            // Parse values like "850/1000"
+            const match = value.match(/(\d+)\/(\d+)/);
+            if (!match) return null;
+            
+            const current = parseInt(match[1]);
+            const max = parseInt(match[2]);
+            
+            if (max === 0) return 0;
+            return (current / max) * 100;
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            statusDiv.style.display = 'block';
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Allow Enter key to submit login
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPassword = document.getElementById('loginPassword');
+            
+            if (loginEmail && loginPassword) {
+                [loginEmail, loginPassword].forEach(input => {
+                    input.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            window.login();
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
