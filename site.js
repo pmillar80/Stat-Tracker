@@ -1,6 +1,6 @@
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
 let db;
 let auth;
@@ -9,6 +9,9 @@ let firebaseConfig;
 // Check authentication state on load
 window.addEventListener('load', () => {
     const savedConfig = localStorage.getItem('firebaseConfig');
+    if (! savedConfig) {
+        initializeFirebase();
+    }
     if (savedConfig) {
         firebaseConfig = JSON.parse(savedConfig);
         try {
@@ -94,9 +97,9 @@ window.logout = async function() {
 };
 
 window.initializeFirebase = function() {
-    const apiKey = document.getElementById('apiKey').value.trim();
-    const projectId = document.getElementById('projectId').value.trim();
-    const databaseURL = document.getElementById('databaseURL').value.trim();
+    const apiKey = "AIzaSyDs5MMQWHyNLYnPYhrkBIA9d86y6V5GjXk"; //document.getElementById('apiKey').value.trim();
+    const projectId = "stattracker-93214";//document.getElementById('projectId').value.trim();
+    const databaseURL = "https://stattracker-93214-default-rtdb.firebaseio.com/";//document.getElementById('databaseURL').value.trim();
 
     if (!apiKey || !projectId || !databaseURL) {
         showStatus('Please fill in all Firebase configuration fields', 'error');
@@ -172,11 +175,13 @@ function displayCharacters(characters) {
 }
 
 function createCharacterCard(character) {
+    console.log(character);
+
     const card = document.createElement('div');
     
     // Calculate health and spirit percentages
-    const healthPercent = calculatePercentage(character.Health);
-    const spiritPercent = calculatePercentage(character.Spirit);
+    const healthPercent = character.Health / character.MaxHealth;//calculatePercentage(character.Health);
+    const spiritPercent = character.Spirit / character.MaxSpirit;//calculatePercentage(character.Spirit);
     
     // Determine card status
     let cardClass = 'character-card';
@@ -194,14 +199,16 @@ function createCharacterCard(character) {
     
     card.className = cardClass;
 
+
+
     const stats = [
         { label: 'Status', value: character.Status },
         { label: 'Location', value: character.Location },
-        { label: 'Health', value: character.Health, highlight: healthPercent <= 50 },
-        { label: 'Mana', value: character.Mana },
-        { label: 'Stamina', value: character.Stamina },
-        { label: 'Spirit', value: character.Spirit, highlight: spiritPercent <= 50 },
-        { label: 'Current Experience', value: character['Current Experience'] },
+        { label: 'Health', value: character.Health + " / " + character.MaxHealth, highlight: healthPercent <= 50 },
+        { label: 'Mana', value: character.Mana + " / " + character.MaxMana },
+        { label: 'Stamina', value: character.Stamina + " / " + character.MaxStamina },
+        { label: 'Spirit', value: character.Spirit + " / " + character.MaxSpirit, highlight: spiritPercent <= 50 },
+        { label: 'Current Experience', value: character.Experience + " / " + character.MaxExperience },
         { label: 'Total Experience', value: character['Total Experience'] },
         { label: 'Wealth', value: character.Wealth },
         { label: 'Stance', value: character.Stance },
@@ -227,20 +234,6 @@ function createCharacterCard(character) {
     return card;
 }
 
-function calculatePercentage(value) {
-    if (!value || typeof value !== 'string') return null;
-    
-    // Parse values like "850/1000"
-    const match = value.match(/(\d+)\/(\d+)/);
-    if (!match) return null;
-    
-    const current = parseInt(match[1]);
-    const max = parseInt(match[2]);
-    
-    if (max === 0) return 0;
-    return (current / max) * 100;
-}
-
 function showStatus(message, type) {
     const statusDiv = document.getElementById('statusMessage');
     statusDiv.className = `status ${type}`;
@@ -255,17 +248,17 @@ function showStatus(message, type) {
 }
 
 // Allow Enter key to submit login
-document.addEventListener('DOMContentLoaded', () => {
-    const loginEmail = document.getElementById('loginEmail');
-    const loginPassword = document.getElementById('loginPassword');
-    
-    if (loginEmail && loginPassword) {
-        [loginEmail, loginPassword].forEach(input => {
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    window.login();
-                }
-            });
-        });
-    }
-});
+//document.addEventListener('DOMContentLoaded', () => {
+//    const loginEmail = document.getElementById('loginEmail');
+//    const loginPassword = document.getElementById('loginPassword');
+//    
+//    if (loginEmail && loginPassword) {
+//        [loginEmail, loginPassword].forEach(input => {
+//            input.addEventListener('keypress', (e) => {
+//                if (e.key === 'Enter') {
+//                    window.login();
+//                }
+//            });
+//        });
+//    }
+//});
