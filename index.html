@@ -144,9 +144,27 @@
         
         .characters-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(5, 1fr);
             gap: 20px;
             margin-top: 20px;
+        }
+        
+        @media (max-width: 1400px) {
+            .characters-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 900px) {
+            .characters-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .characters-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .character-card {
@@ -154,11 +172,87 @@
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         
         .character-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .character-card.danger {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            animation: pulse-danger 2s ease-in-out infinite;
+        }
+        
+        .character-card.danger .character-name,
+        .character-card.danger .stat-label,
+        .character-card.danger .stat-value {
+            color: white;
+        }
+        
+        .character-card.danger .character-name {
+            border-bottom-color: white;
+        }
+        
+        .character-card.danger .stat-row {
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .character-card.warning {
+            background: linear-gradient(135deg, #ffd93d 0%, #ffb347 100%);
+        }
+        
+        .character-card.warning .character-name {
+            color: #7d4e00;
+            border-bottom-color: #7d4e00;
+        }
+        
+        .character-card.warning .stat-label,
+        .character-card.warning .stat-value {
+            color: #5a3600;
+        }
+        
+        .character-card.warning .stat-row {
+            border-bottom-color: rgba(125, 78, 0, 0.2);
+        }
+        
+        @keyframes pulse-danger {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(255, 107, 107, 0.5);
+            }
+            50% {
+                box-shadow: 0 10px 40px rgba(255, 107, 107, 0.8);
+            }
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+        }
+        
+        .status-indicator.danger {
+            background: #ef4444;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+            animation: blink 1s ease-in-out infinite;
+        }
+        
+        .status-indicator.warning {
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
         }
         
         .character-name {
@@ -339,15 +433,34 @@
 
         function createCharacterCard(character) {
             const card = document.createElement('div');
-            card.className = 'character-card';
+            
+            // Calculate health and spirit percentages
+            const healthPercent = calculatePercentage(character.Health);
+            const spiritPercent = calculatePercentage(character.Spirit);
+            
+            // Determine card status
+            let cardClass = 'character-card';
+            let statusClass = '';
+            
+            if (healthPercent !== null && healthPercent <= 25 || 
+                spiritPercent !== null && spiritPercent <= 25) {
+                cardClass += ' danger';
+                statusClass = 'danger';
+            } else if (healthPercent !== null && healthPercent <= 50 || 
+                       spiritPercent !== null && spiritPercent <= 50) {
+                cardClass += ' warning';
+                statusClass = 'warning';
+            }
+            
+            card.className = cardClass;
 
             const stats = [
                 { label: 'Status', value: character.Status },
                 { label: 'Location', value: character.Location },
-                { label: 'Health', value: character.Health },
+                { label: 'Health', value: character.Health, highlight: healthPercent <= 50 },
                 { label: 'Mana', value: character.Mana },
                 { label: 'Stamina', value: character.Stamina },
-                { label: 'Spirit', value: character.Spirit },
+                { label: 'Spirit', value: character.Spirit, highlight: spiritPercent <= 50 },
                 { label: 'Current Experience', value: character['Current Experience'] },
                 { label: 'Total Experience', value: character['Total Experience'] },
                 { label: 'Wealth', value: character.Wealth },
@@ -355,19 +468,37 @@
                 { label: 'Encumbrance', value: character.Encumbrance }
             ];
 
-            let html = `<div class="character-name">${character.Name || 'Unknown'}</div>`;
+            let html = `
+                <div class="status-indicator ${statusClass}"></div>
+                <div class="character-name">${character.Name || 'Unknown'}</div>
+            `;
             
             stats.forEach(stat => {
+                const highlightClass = stat.highlight ? ' style="font-weight: 700;"' : '';
                 html += `
                     <div class="stat-row">
                         <span class="stat-label">${stat.label}:</span>
-                        <span class="stat-value">${stat.value || 'N/A'}</span>
+                        <span class="stat-value"${highlightClass}>${stat.value || 'N/A'}</span>
                     </div>
                 `;
             });
 
             card.innerHTML = html;
             return card;
+        }
+        
+        function calculatePercentage(value) {
+            if (!value || typeof value !== 'string') return null;
+            
+            // Parse values like "850/1000"
+            const match = value.match(/(\d+)\/(\d+)/);
+            if (!match) return null;
+            
+            const current = parseInt(match[1]);
+            const max = parseInt(match[2]);
+            
+            if (max === 0) return 0;
+            return (current / max) * 100;
         }
 
         function showStatus(message, type) {
