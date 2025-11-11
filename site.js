@@ -175,8 +175,6 @@ function displayCharacters(characters) {
 }
 
 function createCharacterCard(character) {
-    console.log(character);
-
     const card = document.createElement('div');
     
     // Calculate health and spirit percentages
