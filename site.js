@@ -197,7 +197,7 @@ function createCharacterCard(character) {
         statusClass = 'warning';
     }
 
-    if (character.Experience == 0 || character.status != "Good") {
+    if (character.Experience == 0 || character.Status != "Good") {
         cardClass += ' danger';
         statusClass = 'danger';
     }
