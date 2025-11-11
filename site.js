@@ -1,7 +1,3 @@
-//        import {  } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { initializeApp, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-//        import {  } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
 let db;
 let auth;
 let firebaseConfig;
