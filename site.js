@@ -213,7 +213,7 @@ function createCharacterCard(character) {
         { label: 'Wealth', value: character.Wealth },
         { label: 'Stance', value: character.Stance },
         { label: 'Encumbrance', value: character.Encumbrance },
-        { label: 'Last Updated', value: new Date().toLocaleString() }
+        { label: 'Last Updated', value: Date.parse(character.Timestamp).toLocaleTimeString() }
     ];
 
     let html = `
