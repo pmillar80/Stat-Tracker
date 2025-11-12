@@ -202,8 +202,8 @@ function createCharacterCard(character) {
 
     if (((new Date - new Date(Date.parse(character.Timestamp))) /60/ 1000) > 5)
     {
-        cardClass += ' warning';
-        statusClass = 'warning';
+        cardClass += ' inactive';
+        statusClass = 'inactive';
     }
     
     card.className = cardClass;
