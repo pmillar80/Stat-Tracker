@@ -393,9 +393,6 @@ h1 {
 .character-name {
     font-size: 1.3em;
     color: #667eea;
-    margin-bottom: 12px;
-    border-bottom: 3px solid #667eea;
-    padding-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
