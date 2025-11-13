@@ -207,17 +207,31 @@ h1 {
 .card-header {
     padding: 20px;
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+    flex-shrink: 0;
 }
 
 .character-name {
     font-size: 1.3em;
     color: #667eea;
-    margin-bottom: 12px;
     border-bottom: 3px solid #667eea;
     padding-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex-shrink: 1;
+    min-width: 0;
 }
 
 /* Experience preview - only visible on mobile in collapsed state */
@@ -233,15 +247,11 @@ h1 {
     }
     
     .character-name {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .name-text {
-        width: 100%;
-        text-align: center;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        flex-shrink: 1;
+        min-width: 0;
     }
     
     .experience-preview {
@@ -249,6 +259,7 @@ h1 {
         font-size: 0.75em;
         font-weight: normal;
         white-space: nowrap;
+        flex-shrink: 0;
     }
     
     .character-card.expanded .experience-preview {
@@ -347,9 +358,6 @@ h1 {
 }
 
 .status-indicator {
-    position: absolute;
-    top: 15px;
-    right: 15px;
     width: 12px;
     height: 12px;
     border-radius: 50%;
@@ -371,6 +379,17 @@ h1 {
 @keyframes blink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
+}
+
+.status-indicator.danger {
+    background: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);
+    animation: blink 1s ease-in-out infinite;
+}
+
+.status-indicator.warning {
+    background: #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
 }
 
 /* Desktop character name style */

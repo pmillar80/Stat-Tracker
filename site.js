@@ -265,11 +265,9 @@ function createCharacterCard(character) {
 
     let html = `
         <div class="card-header">
+            <div class="character-name">${character.Name || 'Unknown'}</div>
+            <span class="experience-preview">${character.Status !== 'Good' ? `Status: ${character.Status}` : `XP: ${character.Experience} / ${character.MaxExperience}`}</span>
             <div class="status-indicator ${statusClass}"></div>
-            <div class="character-name">
-                <span class="name-text">${character.Name || 'Unknown'}</span>
-                <span class="experience-preview">${character.Status !== 'Good' ? `Status: ${character.Status}` : `XP: ${character.Experience} / ${character.MaxExperience}`}</span>
-            </div>
         </div>
         <div class="card-body">
     `;
