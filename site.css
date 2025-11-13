@@ -234,9 +234,14 @@ h1 {
     
     .character-name {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+    }
+    
+    .name-text {
+        width: 100%;
+        text-align: center;
     }
     
     .experience-preview {
