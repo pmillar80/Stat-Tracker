@@ -209,9 +209,15 @@ h1 {
     position: relative;
 }
 
-/* Card Body - collapsible on mobile */
-.card-body {
-    padding: 0 20px 20px 20px;
+.character-name {
+    font-size: 1.3em;
+    color: #667eea;
+    margin-bottom: 12px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Experience preview - only visible on mobile in collapsed state */
@@ -226,6 +232,24 @@ h1 {
         user-select: none;
     }
     
+    .character-name {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .experience-preview {
+        display: inline-block;
+        font-size: 0.75em;
+        font-weight: normal;
+        white-space: nowrap;
+    }
+    
+    .character-card.expanded .experience-preview {
+        display: none;
+    }
+    
     .character-card .card-body {
         max-height: 0;
         overflow: hidden;
@@ -237,14 +261,11 @@ h1 {
         max-height: 1000px;
         padding: 0 20px 20px 20px;
     }
-    
-    .experience-preview {
-        display: block;
-        font-size: 0.9em;
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid rgba(255, 255, 255, 0.3);
-    }
+}
+
+/* Card Body - collapsible on mobile */
+.card-body {
+    padding: 0 20px 20px 20px;
 }
 
 .character-card.danger {
@@ -347,6 +368,7 @@ h1 {
     50% { opacity: 0.3; }
 }
 
+/* Desktop character name style */
 .character-name {
     font-size: 1.3em;
     color: #667eea;

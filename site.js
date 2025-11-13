@@ -266,10 +266,9 @@ function createCharacterCard(character) {
     let html = `
         <div class="card-header">
             <div class="status-indicator ${statusClass}"></div>
-            <div class="character-name">${character.Name || 'Unknown'}</div>
-            <div class="experience-preview">
-                <span class="stat-label">XP:</span>
-                <span class="stat-value">${character.Experience} / ${character.MaxExperience}</span>
+            <div class="character-name">
+                <span>${character.Name || 'Unknown'}</span>
+                <span class="experience-preview">${character.Experience} / ${character.MaxExperience}</span>
             </div>
         </div>
         <div class="card-body">
