@@ -211,6 +211,8 @@ h1 {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 12px;
 }
 
 .status-indicator {
@@ -225,8 +227,6 @@ h1 {
 .character-name {
     font-size: 1.3em;
     color: #667eea;
-    border-bottom: 3px solid #667eea;
-    padding-bottom: 8px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -247,9 +247,6 @@ h1 {
     }
     
     .character-name {
-        border-bottom: none;
-        padding-bottom: 0;
-        margin-bottom: 0;
         flex-shrink: 1;
         min-width: 0;
     }
