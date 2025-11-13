@@ -308,7 +308,7 @@ function showStatus(message, type) {
     statusDiv.textContent = message;
     statusDiv.style.display = 'block';
     
-    if (type === 'success') {
+    if (type === 'success' || type === 'error') {
         setTimeout(() => {
             statusDiv.style.display = 'none';
         }, 5000);
