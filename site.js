@@ -239,6 +239,13 @@ function createCharacterCard(character) {
         statusClass = 'inactive';
     }
     
+    // Check if this card was previously expanded
+    const characterId = character.Name || 'Unknown';
+    const wasExpanded = sessionStorage.getItem(`card-${characterId}`) === 'expanded';
+    if (wasExpanded) {
+        cardClass += ' expanded';
+    }
+    
     card.className = cardClass;
 
     const stats = [
@@ -260,6 +267,10 @@ function createCharacterCard(character) {
         <div class="card-header">
             <div class="status-indicator ${statusClass}"></div>
             <div class="character-name">${character.Name || 'Unknown'}</div>
+            <div class="experience-preview">
+                <span class="stat-label">XP:</span>
+                <span class="stat-value">${character.Experience} / ${character.MaxExperience}</span>
+            </div>
         </div>
         <div class="card-body">
     `;
@@ -279,12 +290,19 @@ function createCharacterCard(character) {
     
     // Add click handler for mobile collapse/expand
     const header = card.querySelector('.card-header');
-    const body = card.querySelector('.card-body');
     
     header.addEventListener('click', () => {
         // Only toggle on mobile
         if (window.innerWidth <= 600) {
             card.classList.toggle('expanded');
+            
+            // Save expansion state
+            const isExpanded = card.classList.contains('expanded');
+            if (isExpanded) {
+                sessionStorage.setItem(`card-${characterId}`, 'expanded');
+            } else {
+                sessionStorage.removeItem(`card-${characterId}`);
+            }
         }
     });
     

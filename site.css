@@ -214,21 +214,16 @@ h1 {
     padding: 0 20px 20px 20px;
 }
 
+/* Experience preview - only visible on mobile in collapsed state */
+.experience-preview {
+    display: none;
+}
+
 /* Mobile-specific styles */
 @media (max-width: 600px) {
     .card-header {
         cursor: pointer;
         user-select: none;
-    }
-    
-    .card-header::after {
-        content: '▼';
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 14px;
-        transition: transform 0.3s;
     }
     
     .character-card .card-body {
@@ -243,8 +238,12 @@ h1 {
         padding: 0 20px 20px 20px;
     }
     
-    .character-card.expanded .card-header::after {
-        transform: translateY(-50%) rotate(180deg);
+    .experience-preview {
+        display: block;
+        font-size: 0.9em;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.3);
     }
 }
 
@@ -310,10 +309,6 @@ h1 {
 .character-card.inactive .status-indicator {
     background: #4b5563;
     box-shadow: 0 0 10px rgba(75, 85, 99, 0.5);
-}
-
-.character-card.inactive .card-header::after {
-    color: #e5e7eb;
 }
 
 @keyframes pulse-danger {
