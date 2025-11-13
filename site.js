@@ -97,9 +97,9 @@ window.logout = async function() {
 };
 
 window.initializeFirebase = function() {
-    const apiKey = "AIzaSyDs5MMQWHyNLYnPYhrkBIA9d86y6V5GjXk"; //document.getElementById('apiKey').value.trim();
-    const projectId = "stattracker-93214";//document.getElementById('projectId').value.trim();
-    const databaseURL = "https://stattracker-93214-default-rtdb.firebaseio.com/";//document.getElementById('databaseURL').value.trim();
+    const apiKey = "AIzaSyDs5MMQWHyNLYnPYhrkBIA9d86y6V5GjXk";
+    const projectId = "stattracker-93214";
+    const databaseURL = "https://stattracker-93214-default-rtdb.firebaseio.com/";
 
     if (!apiKey || !projectId || !databaseURL) {
         showStatus('Please fill in all Firebase configuration fields', 'error');
@@ -154,21 +154,57 @@ function listenForCharacterUpdates() {
     });
 }
 
+// Determine character status priority for sorting
+function getStatusPriority(character) {
+    const healthPercent = character.Health / character.MaxHealth * 100;
+    const spiritPercent = character.Spirit / character.MaxSpirit * 100;
+    
+    // Check if inactive (no activity in 5 minutes)
+    const minutesInactive = ((new Date() - new Date(Date.parse(character.Timestamp))) / 60 / 1000);
+    if (minutesInactive > 5) {
+        return 4; // Inactive - lowest priority
+    }
+    
+    // Check for danger status
+    if (healthPercent <= 25 || spiritPercent <= 25 || 
+        character.Experience == 0 || character.Status != "Good") {
+        return 1; // Danger - highest priority
+    }
+    
+    // Check for warning status
+    if (healthPercent <= 50 || spiritPercent <= 50) {
+        return 2; // Warning
+    }
+    
+    return 3; // Normal
+}
+
 function displayCharacters(characters) {
     const grid = document.getElementById('charactersGrid');
     grid.innerHTML = '';
 
+    // Convert to array and add status priority
+    let characterArray = [];
     if (Array.isArray(characters)) {
-        characters.forEach(character => {
-            const card = createCharacterCard(character);
-            grid.appendChild(card);
-        });
+        characterArray = characters.map(char => ({
+            data: char,
+            priority: getStatusPriority(char)
+        }));
     } else if (typeof characters === 'object') {
-        Object.values(characters).forEach(character => {
-            const card = createCharacterCard(character);
-            grid.appendChild(card);
-        });
+        characterArray = Object.values(characters).map(char => ({
+            data: char,
+            priority: getStatusPriority(char)
+        }));
     }
+
+    // Sort by priority (danger first, inactive last)
+    characterArray.sort((a, b) => a.priority - b.priority);
+
+    // Create and append cards in sorted order
+    characterArray.forEach(item => {
+        const card = createCharacterCard(item.data);
+        grid.appendChild(card);
+    });
 
     document.getElementById('lastUpdated').textContent = 
         `Last updated: ${new Date().toLocaleString()}`;
@@ -178,19 +214,17 @@ function createCharacterCard(character) {
     const card = document.createElement('div');
     
     // Calculate health and spirit percentages
-    const healthPercent = character.Health / character.MaxHealth * 100;//calculatePercentage(character.Health);
-    const spiritPercent = character.Spirit / character.MaxSpirit * 100;//calculatePercentage(character.Spirit);
+    const healthPercent = character.Health / character.MaxHealth * 100;
+    const spiritPercent = character.Spirit / character.MaxSpirit * 100;
     
     // Determine card status
     let cardClass = 'character-card';
     let statusClass = '';
     
-    if (healthPercent !== null && healthPercent <= 25 || 
-        spiritPercent !== null && spiritPercent <= 25) {
+    if (healthPercent <= 25 || spiritPercent <= 25) {
         cardClass += ' danger';
         statusClass = 'danger';
-    } else if (healthPercent !== null && healthPercent <= 50 || 
-                spiritPercent !== null && spiritPercent <= 50) {
+    } else if (healthPercent <= 50 || spiritPercent <= 50) {
         cardClass += ' warning';
         statusClass = 'warning';
     }
@@ -200,15 +234,12 @@ function createCharacterCard(character) {
         statusClass = 'danger';
     }
 
-    if (((new Date - new Date(Date.parse(character.Timestamp))) /60/ 1000) > 5)
-    {
+    if (((new Date() - new Date(Date.parse(character.Timestamp))) / 60 / 1000) > 5) {
         cardClass += ' inactive';
         statusClass = 'inactive';
     }
     
     card.className = cardClass;
-
-
 
     const stats = [
         { label: 'Status', value: character.Status },
@@ -226,8 +257,11 @@ function createCharacterCard(character) {
     ];
 
     let html = `
-        <div class="status-indicator ${statusClass}"></div>
-        <div class="character-name">${character.Name || 'Unknown'}</div>
+        <div class="card-header">
+            <div class="status-indicator ${statusClass}"></div>
+            <div class="character-name">${character.Name || 'Unknown'}</div>
+        </div>
+        <div class="card-body">
     `;
     
     stats.forEach(stat => {
@@ -240,7 +274,20 @@ function createCharacterCard(character) {
         `;
     });
 
+    html += `</div>`;
     card.innerHTML = html;
+    
+    // Add click handler for mobile collapse/expand
+    const header = card.querySelector('.card-header');
+    const body = card.querySelector('.card-body');
+    
+    header.addEventListener('click', () => {
+        // Only toggle on mobile
+        if (window.innerWidth <= 600) {
+            card.classList.toggle('expanded');
+        }
+    });
+    
     return card;
 }
 
@@ -256,19 +303,3 @@ function showStatus(message, type) {
         }, 5000);
     }
 }
-
-// Allow Enter key to submit login
-//document.addEventListener('DOMContentLoaded', () => {
-//    const loginEmail = document.getElementById('loginEmail');
-//    const loginPassword = document.getElementById('loginPassword');
-//    
-//    if (loginEmail && loginPassword) {
-//        [loginEmail, loginPassword].forEach(input => {
-//            input.addEventListener('keypress', (e) => {
-//                if (e.key === 'Enter') {
-//                    window.login();
-//                }
-//            });
-//        });
-//    }
-//});

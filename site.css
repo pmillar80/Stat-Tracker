@@ -191,7 +191,6 @@ h1 {
 .character-card {
     background: white;
     border-radius: 15px;
-    padding: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     transition: all 0.3s;
     position: relative;
@@ -202,6 +201,51 @@ h1 {
 .character-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+/* Card Header - always visible */
+.card-header {
+    padding: 20px;
+    position: relative;
+}
+
+/* Card Body - collapsible on mobile */
+.card-body {
+    padding: 0 20px 20px 20px;
+}
+
+/* Mobile-specific styles */
+@media (max-width: 600px) {
+    .card-header {
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .card-header::after {
+        content: '▼';
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        transition: transform 0.3s;
+    }
+    
+    .character-card .card-body {
+        max-height: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    }
+    
+    .character-card.expanded .card-body {
+        max-height: 1000px;
+        padding: 0 20px 20px 20px;
+    }
+    
+    .character-card.expanded .card-header::after {
+        transform: translateY(-50%) rotate(180deg);
+    }
 }
 
 .character-card.danger {
@@ -241,6 +285,10 @@ h1 {
     border-bottom-color: rgba(125, 78, 0, 0.2);
 }
 
+.character-card.warning .card-header::after {
+    color: #7d4e00;
+}
+
 .character-card.inactive {
     background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
 }
@@ -262,6 +310,10 @@ h1 {
 .character-card.inactive .status-indicator {
     background: #4b5563;
     box-shadow: 0 0 10px rgba(75, 85, 99, 0.5);
+}
+
+.character-card.inactive .card-header::after {
+    color: #e5e7eb;
 }
 
 @keyframes pulse-danger {
