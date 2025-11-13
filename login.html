@@ -25,28 +25,7 @@
             <button class="btn" onclick="login()">Login</button>
             <div id="loginError" class="error-message hidden"></div>
         </div>
-        
-        <!-- Setup Section -->
-        <div id="setupSection" class="setup-section hidden">
-            <button class="btn logout-btn" onclick="logout()">Logout</button>
-            <h2>Firebase Setup</h2>
-            <div class="firebase-config">
-                <label for="apiKey">API Key:</label>
-                <input type="text" id="apiKey" placeholder="AIzaSy...">
-                
-                <label for="projectId">Project ID:</label>
-                <input type="text" id="projectId" placeholder="your-project-id">
-                
-                <label for="databaseURL">Database URL:</label>
-                <input type="text" id="databaseURL" placeholder="https://your-project.firebaseio.com">
-                
-                <button class="btn" onclick="initializeFirebase()">Connect to Firebase</button>
-            </div>
-            
-            <div class="instructions">
-                <h3>📋 Setup Instructions:</h3>
-            </div>
-        </div>
+
         
         <div id="statusMessage"></div>
         

@@ -23,13 +23,11 @@ window.addEventListener('load', () => {
                 if (user) {
                     // User is logged in
                     document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('setupSection').classList.add('hidden');
                     document.getElementById('charactersDisplay').classList.remove('hidden');
                     listenForCharacterUpdates();
                 } else {
                     // User is logged out
                     document.getElementById('loginSection').classList.remove('hidden');
-                    document.getElementById('setupSection').classList.add('hidden');
                     document.getElementById('charactersDisplay').classList.add('hidden');
                 }
             });
@@ -56,7 +54,6 @@ window.login = async function() {
         errorDiv.classList.remove('hidden');
         // Show setup section
         document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('setupSection').classList.remove('hidden');
         return;
     }
 
@@ -128,7 +125,6 @@ window.initializeFirebase = function() {
         document.getElementById('apiEndpoint').textContent = `POST ${endpoint}`;
         
         // Show login section
-        document.getElementById('setupSection').classList.add('hidden');
         document.getElementById('loginSection').classList.remove('hidden');
         
     } catch (error) {
@@ -147,7 +143,7 @@ function listenForCharacterUpdates() {
         }
     }, (error) => {
         if (error.code === 'PERMISSION_DENIED') {
-            showStatus('❌ Permission denied. Make sure you set the database rules correctly!', 'error');
+            showStatus('❌ Permission denied!', 'error');
         } else {
             showStatus('❌ Error reading data: ' + error.message, 'error');
         }
